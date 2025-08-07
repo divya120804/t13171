@@ -1,0 +1,219 @@
+Microsoft Windows [Version 10.0.22000.2538]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Program Files\MySQL\MySQL Server 8.0\bin>mysql -h localhost -u root -p
+Enter password: ****
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.42 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use demo;
+Database changed
+mysql> CREATE TABLE enrollment (
+    ->     ->     enrollment_id INT PRIMARY KEY,
+    ->     ->     student_id INT,
+    ->     ->     course_id INT,
+    ->     ->     FOREIGN KEY(student_id) REFERENCES students(student_id),
+    ->     ->     FOREIGN KEY(course_id) REFERENCES courses(course_id)
+    ->     -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '->     enrollment_id INT PRIMARY KEY,
+    ->     student_id INT,
+    ->     cour' at line 2
+mysql> create table enrollment(enrollment_id int primary key, student_id int, course_id int, foreign key (student_id) references student(student_id), foreign key(course_id) references course(course_id));
+ERROR 1050 (42S01): Table 'enrollment' already exists
+mysql> desc enrollment;
++------------+------+------+-----+---------+-------+
+| Field      | Type | Null | Key | Default | Extra |
++------------+------+------+-----+---------+-------+
+| eid        | int  | NO   | PRI | NULL    |       |
+| student_id | int  | YES  |     | NULL    |       |
+| course_id  | int  | YES  |     | NULL    |       |
++------------+------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> desc students;
+ERROR 1146 (42S02): Table 'demo.students' doesn't exist
+mysql> desc student;
++---------------+----------+------+-----+---------+-------+
+| Field         | Type     | Null | Key | Default | Extra |
++---------------+----------+------+-----+---------+-------+
+| student_id    | int      | NO   | PRI | NULL    |       |
+| name          | char(20) | YES  |     | NULL    |       |
+| date_of_birth | int      | YES  |     | NULL    |       |
+| department_id | int      | YES  |     | NULL    |       |
++---------------+----------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> desc course;
+ERROR 1146 (42S02): Table 'demo.course' doesn't exist
+mysql> desc courses;
++-------------+--------------+------+-----+---------+-------+
+| Field       | Type         | Null | Key | Default | Extra |
++-------------+--------------+------+-----+---------+-------+
+| course_id   | int          | NO   | PRI | NULL    |       |
+| course_name | varchar(255) | YES  |     | NULL    |       |
++-------------+--------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> create view student_view1 as SELECT student_id, name FROM student;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM student_view1;
+Empty set (0.01 sec)
+
+mysql> SELECT name FROM student_view1 where student_id = 101;
+Empty set (0.00 sec)
+
+mysql> INSERT INTO students (student_id, name, date_of_birth, department_id) VALUES
+    ->  (101, 'Ajay', '2000-01-01', 101);
+ERROR 1146 (42S02): Table 'demo.students' doesn't exist
+mysql> INSERT INTO student (student_id, name, date_of_birth, department_id) VALUES(101, 'Ajay', '2000-01-01', 101);
+ERROR 1265 (01000): Data truncated for column 'date_of_birth' at row 1
+mysql> SHOW CREATE TABLE students;
+ERROR 1146 (42S02): Table 'demo.students' doesn't exist
+mysql> show create table student;
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table   | Create Table                                                                                                                                                                                                                                                  |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| student | CREATE TABLE `student` (
+  `student_id` int NOT NULL,
+  `name` char(20) DEFAULT NULL,
+  `date_of_birth` int DEFAULT NULL,
+  `department_id` int DEFAULT NULL,
+  PRIMARY KEY (`student_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+
+mysql>  ALTER TABLE student DROP CONSTRAINT CHK;
+ERROR 3940 (HY000): Constraint 'CHK' does not exist.
+mysql> INSERT INTO student (student_id, name, date_of_birth, department_id) VALUES(101, 'Ajay', '2000-01-01', 101);
+ERROR 1265 (01000): Data truncated for column 'date_of_birth' at row 1
+mysql> INSERT INTO student (student_id, name, date_of_birth, department_id) VALUES(101, 'Ajay', '01', 101);
+Query OK, 1 row affected (0.01 sec)
+
+mysql>  ALTER TABLE student DROP CONSTRAINT CHK;
+ERROR 3940 (HY000): Constraint 'CHK' does not exist.
+mysql>  ALTER TABLE students ADD CONSTRAINT CHK CHECK (student_id > 0);
+ERROR 1146 (42S02): Table 'demo.students' doesn't exist
+mysql>  ALTER TABLE students ADD CONSTRAINT CHK CHECK (student_id > 0);
+ERROR 1146 (42S02): Table 'demo.students' doesn't exist
+mysql> ALTER TABLE student ADD CONSTRAINT CHK CHECK (student_id > 0);
+Query OK, 1 row affected (0.10 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO student (student_id, name, date_of_birth, department_id) VALUES(101, 'Ajay', '01', 101);
+ERROR 1062 (23000): Duplicate entry '101' for key 'student.PRIMARY'
+mysql> SELECT * FROM student_view1;
++------------+------+
+| student_id | name |
++------------+------+
+|        101 | Ajay |
++------------+------+
+1 row in set (0.00 sec)
+
+mysql> SELECT name FROM student_view1 WHERE student_id = 101;
++------+
+| name |
++------+
+| Ajay |
++------+
+1 row in set (0.00 sec)
+
+mysql> INSERT INTO student_view1 (student_id, name) VALUES (105, 'Charlie');
+Query OK, 1 row affected (0.01 sec)
+
+mysql>  DELETE FROM student_view1 WHERE student_id = 101;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> CREATE VIEW env AS SELECT s.name AS student_name, c.course_name, e.year AS academic_year FROM students s JOIN enrollment e ON s.student_id = e.enrollment_id JOIN courses c ON e.course_id = c.course_id;
+ERROR 1146 (42S02): Table 'demo.students' doesn't exist
+mysql>  CREATE VIEW env AS SELECT s.name AS student_name, c.course_name, e.year AS academic_year FROM student s JOIN enrollment e ON s.student_id = e.enrollment_id JOIN courses c ON e.course_id = c.course_id;
+ERROR 1054 (42S22): Unknown column 'e.year' in 'field list'
+mysql>  ALTER TABLE enrollment
+    ->  ADD COLUMN year INT;
+Query OK, 0 rows affected (0.09 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE VIEW env ASSELECT    s.name AS student_name,    c.course_name,    e.year AS academic_yearFROM    student sJOIN    enrollment e ON s.student_id = e.student_idJOIN    courses c ON e.course_id = c.course_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ASSELECT    s.name AS student_name,    c.course_name,    e.year AS academic_year' at line 1
+mysql> CREATE VIEW env AS
+    ->     -> SELECT
+    ->     ->     s.name AS student_name,
+    ->     ->     c.course_name,
+    ->     ->     e.year AS academic_year
+    ->     -> FROM
+    ->     ->     students s
+    ->     -> JOIN
+    ->     ->     enrollment e ON s.student_id = e.student_id
+    ->     -> JOIN
+    ->    courses c ON e.course_id = c.course_id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-> SELECT
+    ->     s.name AS student_name,
+    ->     c.course_name,
+    ->   ' at line 2
+mysql> create view env as
+    -> select
+    -> s.name as student_name,
+    -> c.course_name,
+    -> e.year as academic_year
+    -> from
+    -> student s
+    -> join
+    -> enrollment e on s.student_id = e.student_id
+    -> join
+    -> courses c on e.course_id = c.course_id;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM env;
+Empty set (0.00 sec)
+
+mysql> SELECT student_name, course_name FROM env WHERE academic_year = 2024;
+Empty set (0.00 sec)
+
+mysql> INSERT INTO courses (course_id, course_name) VALUES(1, 'Database Systems');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> INSERT INTO student (student_id, name, date_of_birth, department_id) VALUES(102, 'Ajay', '01', 'CSE');
+ERROR 1366 (HY000): Incorrect integer value: 'CSE' for column 'department_id' at row 1
+mysql> INSERT INTO student (student_id, name, date_of_birth, department_id) VALUES(102, 'Ajay', '01', '1123');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO enrollment (enrollment_id, student_id, course_id, year) VALUES(1, 102, 1, 2024);
+ERROR 1054 (42S22): Unknown column 'enrollment_id' in 'field list'
+mysql>  INSERT INTO enrollment (eid, student_id, course_id, year) VALUES(1, 102, 1, 2024);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM env;
++--------------+------------------+---------------+
+| student_name | course_name      | academic_year |
++--------------+------------------+---------------+
+| Ajay         | Database Systems |          2024 |
++--------------+------------------+---------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT student_name, course_name FROM env WHERE academic_year = 2024;
++--------------+------------------+
+| student_name | course_name      |
++--------------+------------------+
+| Ajay         | Database Systems |
++--------------+------------------+
+1 row in set (0.00 sec)
+
+mysql> UPDATE env SET academic_year = 2025 WHERE student_name = 'Ajay';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> INSERT INTO env (student_name, course_name, academic_year) VALUES ('New Student', 'New Course', 2025);
+ERROR 1393 (HY000): Can not modify more than one base table through a join view 'demo.env'
+mysql> DELETE FROM env WHERE student_name = 'Ajay';
+ERROR 1395 (HY000): Can not delete from join view 'demo.env'
+Hence we now know that we cannot perform insert, delete, update operations on join view type of queries. */
