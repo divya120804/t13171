@@ -1,0 +1,74 @@
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Fri Aug 8 15:58:30 2025
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+Enter user-name: system
+Enter password:
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+Enter user-name: system
+Enter password:
+Last Successful login time: Fri Aug 08 2025 14:59:51 +05:30
+
+Connected to:
+Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+Version 23.9.0.25.07
+
+SQL> set serveroutput on
+SQL> @C:\Users\System05\Desktop\13171\bookname.sql
+Enter value for a: 121
+old   6: a:=&a;
+new   6: a:=121;
+Enter value for b: techknowledge
+old   7: b:='&b';
+new   7: b:='techknowledge';
+Enter value for c: 300
+old   8: c:=&c;
+new   8: c:=300;
+insert into demoa3(a,b,c);
+                         *
+ERROR at line 12:
+ORA-06550: line 12, column 26:
+PL/SQL: ORA-00926: Missing VALUES or SET keyword
+ORA-06550: line 12, column 1:
+PL/SQL: SQL Statement ignored
+Help: https://docs.oracle.com/error-help/db/ora-06550/
+
+
+SQL> @C:\Users\System05\Desktop\13171\bookname.sql
+Enter value for a: 121
+old   6: a:=&a;
+new   6: a:=121;
+Enter value for b: techknowledge
+old   7: b:='&b';
+new   7: b:='techknowledge';
+Enter value for c: 500
+old   8: c:=&c;
+new   8: c:=500;
+pid121
+nametechknowledge
+price500
+inserted data!
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from deco3;
+select * from deco3
+              *
+ERROR at line 1:
+ORA-00942: table or view "SYSTEM"."DECO3" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL>  select * from demoa3;
+
+       PID PNAME                     PRICE
+---------- -------------------- ----------
+       121 techknowledge               500
+
+SQL>
